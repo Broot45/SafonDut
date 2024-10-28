@@ -34,10 +34,11 @@ namespace OOP1
         public int AgeDays { get; set; } // Число дней со дня рождения
         public bool Corr {  get; set; } // Факт искажённого состояния существа
         public bool Stasys { get; set; } // Факт стазиса (бонусы возраста не начисляются)
+        public int[] LVLmap { get; set; } // 
 
 
 
-        public Create(string Name, string Race) : this(Name, Race, false) { }
+        public Create(string Name, string Race) : this(Name, Race, false) { } // Конструктор класса
 
 
         public Create(string Name, string Race, bool Corr) // Конструктор класса второго порядка
@@ -51,13 +52,14 @@ namespace OOP1
             this.Corr = Corr;
             this.Stasys = false;
 
-            Console.WriteLine($"Было рождено {(Corr ? "искажённое" : "незапятнанное")} существо рассы {this.Race} носящее имя {this.Name}");
+            Console.WriteLine($"Было рождено {(Corr ? "искажённое" : "незапятнанное")} существо рассы {this.Race} носящее имя {this.Name}"); // Типа лог
         }
 
 
 
         public void DayP(int Day) // Для реализащии возможности перемотки времени возраст принимает на вход количество пройденных дней
             // При реализации високосного года можно просто не прибавлять возраст существам в дополнительные дни
+            // Годы так-же прибавляются по одному, чтобы при резкой перемотке не было кнб пиздеца, превышеный возраст останется в днях, и каждый день будет перетекать в года и рассовые бонусы
         {
             AgeDays += Day;
 
@@ -65,7 +67,11 @@ namespace OOP1
             {
                 AgeDays -= 364;
 
-                if (!Stasys) {  } // Получение бонуса за возраст
+                if (!Stasys) 
+                {
+                    this.Exp += Day;
+                    Console.WriteLine(    
+                } // Получение бонуса за возраст
             }
         }
 
