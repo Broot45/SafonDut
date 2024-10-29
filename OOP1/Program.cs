@@ -21,11 +21,6 @@ namespace OOP1
          *
          */
 
-
-
-
-
-
         public string Name { get; set; } // Имя существа
         public string Race { get; set; } // Рассовая принадлежность
         public int LVL { get; set; } // Полный уровень существа
@@ -37,12 +32,8 @@ namespace OOP1
         public bool Corr {  get; set; } // Факт искажённого состояния существа
         public bool Stasys { get; set; } // Факт стазиса (бонусы возраста не начисляются)
 
-
-
         public Create(string Name, string Race) : this (Name, Race, 0, false) { }
         public Create(string Name, string Race, int LVL) : this(Name, Race, LVL, false) { } // Конструкторы класса
-
-
         public Create(string Name, string Race, int LVL, bool Corr) // ===== Конструктор класса второго порядка
         {
             this.Name = Name;
@@ -67,12 +58,9 @@ namespace OOP1
                     templLVL++;
                     this.ExpMax = (int)(this.ExpMax * this.LVLinc);
                 }
-
             }
-
             Console.WriteLine($"Его уровень: {this.LVL} \n"); // Типа лог 2
         }
-
 
         public void DayP(int Day) // ===== Для реализащии возможности перемотки времени возраст принимает на вход количество пройденных дней
         // При реализации високосного года можно просто не прибавлять возраст существам в дополнительные дни
@@ -85,13 +73,11 @@ namespace OOP1
                 AgeDays -= 364;
 
                 if (!Stasys) 
-                {
-                    
+                {                    
                     Console.WriteLine($"{this.Name} пережил ещё один год, прибавка к опыту получена");
                     this.giveExp(1000);
                 } // Получение бонуса за возраст
             }
-
         }
 
         public void giveExp(int Exp) // ====== Получение опыта
@@ -107,16 +93,12 @@ namespace OOP1
             }
         }
 
-
         public void log()
         {
             Console.WriteLine("Имя: " + this.Name);
             Console.WriteLine($"Опыт: {this.Exp}/{this.ExpMax}");
             Console.WriteLine("Уровень: " + this.LVL + "\n");
         }
-       
-
-
     }
 
     internal class Program
