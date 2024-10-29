@@ -65,12 +65,12 @@ namespace OOP1
                 while (templLVL < this.LVL)
                 {
                     templLVL++;
-                    this.ExpMax = this.ExpMax * this.LVLinc;
+                    this.ExpMax = (int)(this.ExpMax * this.LVLinc);
                 }
 
             }
 
-            Console.WriteLine($"Его уровень: {this.LVL}"); // Типа лог 2
+            Console.WriteLine($"Его уровень: {this.LVL} \n"); // Типа лог 2
         }
 
 
@@ -86,8 +86,9 @@ namespace OOP1
 
                 if (!Stasys) 
                 {
-                    this.Exp += Day;
-                    Console.WriteLine(    
+                    
+                    Console.WriteLine($"{this.Name} пережил ещё один год, прибавка к опыту получена");
+                    this.Exp += 1000;
                 } // Получение бонуса за возраст
             }
 
@@ -101,7 +102,7 @@ namespace OOP1
             {
                 this.Exp -= this.ExpMax;
                 this.LVL++;
-                this.ExpMax = this.ExpMax * this.LVLinc
+                this.ExpMax = (int)(this.ExpMax * this.LVLinc);
             }
         }
 
@@ -114,6 +115,22 @@ namespace OOP1
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello world");
+
+            Create Cr1 = new Create("John", "Orc");
+
+            Create Cr2 = new Create("John, but better", "Oni (chan)", 3);
+
+            Create Cr3 = new Create("John from onlyfans", "Ogr", 27, true);
+
+
+
+
+
+
+
+            Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            Console.ReadKey(false); // false нужен, чтобы клавиша не отображалась в консоли перед закрытием
         }
     }
 }
