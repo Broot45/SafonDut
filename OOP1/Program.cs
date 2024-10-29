@@ -22,6 +22,9 @@ namespace OOP1
          */
 
         public string Name { get; set; } // Имя существа
+        public int Dur { get; set; } // HP 
+        public int DurMax { get; set; } // Максимальное HP
+        public double Durinc { get; set; } // Прогрессия дюра от уровня
         public string Race { get; set; } // Рассовая принадлежность
         public int LVL { get; set; } // Полный уровень существа
         public int Exp {  get; set; } // Опыт существа
@@ -37,6 +40,9 @@ namespace OOP1
         public Create(string Name, string Race, int LVL, bool Corr) // ===== Конструктор класса второго порядка
         {
             this.Name = Name;
+            this.Dur = 50;
+            this.DurMax = 50; 
+            this.Durinc = 1.1;
             this.Race = Race;
             this.LVL = LVL;
             this.Exp = 0;
@@ -88,17 +94,47 @@ namespace OOP1
             {
                 this.Exp -= this.ExpMax;
                 this.LVL++;
-                this.ExpMax = (int)(this.ExpMax * this.LVLinc);
+                this.ExpMax = (int)(this.ExpMax * this.LVLinc); // Расчёт нового предела опыта
                 Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!");
+                this.DurMax = (int)(this.DurMax * this.Durinc); // РАсчёт нового максимального HP 
+                this.Dur = this.DurMax;
             }
+        }
+
+        public int brokeEbalo(int hurt) // Функция получения существом по ебалу (отхил входит в комплект), возвращает оставшееся HP
+        {
+            this.Dur -= hurt;
+
+            if (this.Dur > this.DurMax) { this.Dur = this.DurMax; } // Защита от оверхила
+            if (this.Dur <= 0) 
+            {
+                this.Dur = 0;
+                this.Stasys = true;
+                Console.WriteLine($"{this.Name} от полученного урона попытался съёбаться {(this.Corr ? "в обьятия хаоса" : "на свет божий")}, но поскольку {(this.Corr ? "хаоса" : "бога")} здесь пока нет - он ушёл в стазис");
+            }
+
+            return this.Dur;
         }
 
         public void log()
         {
             Console.WriteLine("Имя: " + this.Name);
             Console.WriteLine($"Опыт: {this.Exp}/{this.ExpMax}");
-            Console.WriteLine("Уровень: " + this.LVL + "\n");
+            Console.WriteLine("Уровень: " + this.LVL);
+            Console.WriteLine($"Durability: {this.Dur}/{this.DurMax}\n");
         }
+    }
+
+    class Orc : Create
+    {
+        public string Breed { get; set; } // Имя существа
+        public string Waagh { get; set; } // Рассовая принадлежность
+    }
+
+    class Human : Create
+    {
+        public string SubRace { get; set; } // Имя существа
+        public string Work { get; set; } // Рассовая принадлежность
     }
 
     internal class Program
