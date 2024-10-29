@@ -88,7 +88,7 @@ namespace OOP1
                 {
                     
                     Console.WriteLine($"{this.Name} пережил ещё один год, прибавка к опыту получена");
-                    this.Exp += 1000;
+                    this.giveExp(1000);
                 } // Получение бонуса за возраст
             }
 
@@ -103,9 +103,17 @@ namespace OOP1
                 this.Exp -= this.ExpMax;
                 this.LVL++;
                 this.ExpMax = (int)(this.ExpMax * this.LVLinc);
+                Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!");
             }
         }
 
+
+        public void log()
+        {
+            Console.WriteLine("Имя: " + this.Name);
+            Console.WriteLine($"Опыт: {this.Exp}/{this.ExpMax}");
+            Console.WriteLine("Уровень: " + this.LVL + "\n");
+        }
        
 
 
@@ -117,12 +125,17 @@ namespace OOP1
         {
             Console.WriteLine("Hello world");
 
-            Create Cr1 = new Create("John", "Orc");
+            Create[] Cr = new Create[4];
 
-            Create Cr2 = new Create("John, but better", "Oni (chan)", 3);
+            Cr[0] = new Create("Sample", "Crete");
+            Cr[1] = new Create("John", "Orc");
+            Cr[2] = new Create("John, but better", "Oni (chan)", 3);
+            Cr[3] = new Create("John from onlyfans", "Ogr", 27, true);
 
-            Create Cr3 = new Create("John from onlyfans", "Ogr", 27, true);
-
+            for (int i = 0; i < Cr.Length; i++) 
+            {
+                Cr[i].log();
+            }
 
 
 
