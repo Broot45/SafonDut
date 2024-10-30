@@ -27,27 +27,29 @@ namespace OOP1
         public double Durinc { get; set; } // Прогрессия дюра от уровня
         public string Race { get; set; } // Рассовая принадлежность
         public int LVL { get; set; } // Полный уровень существа
-        public int Exp {  get; set; } // Опыт существа
+        public int Exp { get; set; } // Опыт существа
         public int ExpMax { get; set; } // Максимум опыта, при котором происходит повышение уровня
-        public double LVLinc { get; set; } // Коэффициент, на который увеличивается количество опыта, необходимое для повышения опыта
+        public double Expinc { get; set; } // Коэффициент, на который увеличивается количество опыта, необходимое для повышения опыта
         public int Age { get; set; } // Возраст существа
         public int AgeDays { get; set; } // Число дней со дня рождения
-        public bool Corr {  get; set; } // Факт искажённого состояния существа
+        public bool Corr { get; set; } // Факт искажённого состояния существа
         public bool Stasys { get; set; } // Факт стазиса (бонусы возраста не начисляются)
 
-        public Create(string Name, string Race) : this (Name, Race, 0, false) { }
-        public Create(string Name, string Race, int LVL) : this(Name, Race, LVL, false) { } // Конструкторы класса
-        public Create(string Name, string Race, int LVL, bool Corr) // ===== Конструктор класса второго порядка
+        public Create(string Name, string Race) : this(Name, Race, 0, false, (new double[] { 50, 1.1, 1000, 1.2})) { }
+        public Create(string Name, string Race, int LVL) : this(Name, Race, LVL, false, (new double[] { 50, 1.1, 1000, 1.2})) { } // Конструкторы класса
+        public Create(string Name, string Race, int LVL, bool Corr) : this(Name, Race, LVL, Corr, (new double[] { 50, 1.1, 1000, 1.2 })) { }
+        public Create(string Name, string Race, int LVL, bool Corr, double[] balance) // ===== Конструктор класса второго порядка
         {
+            // double[] balance  = {DurMax, Durinc, Expmax, Expinc} То есть для стандартного существа это - (new double[] { 50, 1.1, 1000, 1.2})
             this.Name = Name;
-            this.Dur = 50;
-            this.DurMax = 50; 
-            this.Durinc = 1.1;
+            this.Dur = (int)balance[0];
+            this.DurMax = (int)balance[0]; 
+            this.Durinc = balance[1];
             this.Race = Race;
             this.LVL = LVL;
             this.Exp = 0;
-            this.ExpMax = 1000;
-            this.LVLinc = 1.2; // Стандартный коэффициент прогрессии опыта
+            this.ExpMax = (int)balance[2];
+            this.Expinc = balance[3]; // Стандартный коэффициент прогрессии опыта
             this.Age = 0;
             this.AgeDays = 0;
             this.Corr = Corr;
@@ -62,7 +64,7 @@ namespace OOP1
                 while (templLVL < this.LVL)
                 {
                     templLVL++;
-                    this.ExpMax = (int)(this.ExpMax * this.LVLinc);
+                    this.ExpMax = (int)(this.ExpMax * this.Expinc);
                 }
             }
             Console.WriteLine($"Его уровень: {this.LVL} \n"); // Типа лог 2
@@ -94,7 +96,7 @@ namespace OOP1
             {
                 this.Exp -= this.ExpMax;
                 this.LVL++;
-                this.ExpMax = (int)(this.ExpMax * this.LVLinc); // Расчёт нового предела опыта
+                this.ExpMax = (int)(this.ExpMax * this.Expinc); // Расчёт нового предела опыта
                 Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!");
                 this.DurMax = (int)(this.DurMax * this.Durinc); // РАсчёт нового максимального HP 
                 this.Dur = this.DurMax;
@@ -127,15 +129,22 @@ namespace OOP1
 
     class Orc : Create
     {
-        public string Breed { get; set; } // Имя существа
-        public string Waagh { get; set; } // Рассовая принадлежность
+        public string Breed { get; set; } // Племя орка
+        public string Cast { get; set; } // Племенная каста, привязана к работе
+
+        public Orc(string Name, string Breed, string Cast) : this(Name, Breed, Cast, 0, false) { }
+        public Orc(string Name, string Breed, string Cast, int LVL) : this(Name, Breed, Cast, LVL, false) { } // Конструкторы класса, также как и в базовом, совершают цепочку вызовов
+        public Orc(string Name, string Breed, string Cast, int LVL, bool Corr) : base(Name, "Orc", 0, false, (new double[] {65, 1.15, 2000, 1.05 })) // ===== Конструктор класса второго порядка, помимо своих действий, вызывает конструктор базового класса (наиболее полный)
+            // balance = {65, 1.15, 2000, 1.05 } подразумевает, что орки имеют больше хп, быстрее жиреют, однако им гораздо труднее в начале, и проще в конце (много мяса, и крайне мало крайне сильных)
+        {
+            this.Breed = Breed; // Уникальные для дочернего класса задаваемые параметры
+            this.Cast = Cast;
+
+
+            Console.WriteLine($"Этот орк имеет титул {Cast}, и проживает в поселении {Breed}");
+        }
     }
 
-    class Human : Create
-    {
-        public string SubRace { get; set; } // Имя существа
-        public string Work { get; set; } // Рассовая принадлежность
-    }
 
     internal class Program
     {
@@ -155,7 +164,7 @@ namespace OOP1
                 Cr[i].log();
             }
 
-
+            Orc O1 = new Orc("Банан", "Умпалумпы", "Жёздъ");
 
 
 
