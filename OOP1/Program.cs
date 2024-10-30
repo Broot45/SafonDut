@@ -59,12 +59,14 @@ namespace OOP1
             Console.WriteLine($"Было рождено {(Corr ? "искажённое" : "незапятнанное")} существо рассы {this.Race} носящее имя {this.Name}"); // Типа лог
 
             if (this.LVL > 0) // Расчёт максимального опыта для текущего уровня (выполняется только при спавне)
+                // Теперь этот фрагмент вручную набивает опыт до требуемого уровня
             {
-                int templLVL = 0;
-                while (templLVL < this.LVL)
+                int templLVL = this.LVL;
+                this.LVL = 0;
+
+                while (templLVL > this.LVL)
                 {
-                    templLVL++;
-                    this.ExpMax = (int)(this.ExpMax * this.Expinc);
+                    this.giveExp(this.ExpMax, false);
                 }
             }
             Console.WriteLine($"Его уровень: {this.LVL} \n"); // Типа лог 2
@@ -88,7 +90,8 @@ namespace OOP1
             }
         }
 
-        public void giveExp(int Exp) // ====== Получение опыта
+        public void giveExp(int Exp) { giveExp(Exp, true); }
+        public void giveExp(int Exp, bool Render) // ====== Получение опыта
         { 
             this.Exp += Exp;
 
@@ -97,8 +100,8 @@ namespace OOP1
                 this.Exp -= this.ExpMax;
                 this.LVL++;
                 this.ExpMax = (int)(this.ExpMax * this.Expinc); // Расчёт нового предела опыта
-                Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!");
-                this.DurMax = (int)(this.DurMax * this.Durinc); // РАсчёт нового максимального HP 
+                if (Render) { Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!"); }
+                this.DurMax = (int)(this.DurMax * this.Durinc); // Расчёт нового максимального HP 
                 this.Dur = this.DurMax;
             }
         }
@@ -134,7 +137,7 @@ namespace OOP1
 
         public Orc(string Name, string Breed, string Cast) : this(Name, Breed, Cast, 0, false) { }
         public Orc(string Name, string Breed, string Cast, int LVL) : this(Name, Breed, Cast, LVL, false) { } // Конструкторы класса, также как и в базовом, совершают цепочку вызовов
-        public Orc(string Name, string Breed, string Cast, int LVL, bool Corr) : base(Name, "Orc", 0, false, (new double[] {65, 1.15, 2000, 1.05 })) // ===== Конструктор класса второго порядка, помимо своих действий, вызывает конструктор базового класса (наиболее полный)
+        public Orc(string Name, string Breed, string Cast, int LVL, bool Corr) : base(Name, "Orc", LVL, Corr, (new double[] {65, 1.15, 2000, 1.05 })) // ===== Конструктор класса второго порядка, помимо своих действий, вызывает конструктор базового класса (наиболее полный)
             // balance = {65, 1.15, 2000, 1.05 } подразумевает, что орки имеют больше хп, быстрее жиреют, однако им гораздо труднее в начале, и проще в конце (много мяса, и крайне мало крайне сильных)
         {
             this.Breed = Breed; // Уникальные для дочернего класса задаваемые параметры
@@ -164,8 +167,8 @@ namespace OOP1
                 Cr[i].log();
             }
 
-            Orc O1 = new Orc("Банан", "Умпалумпы", "Жёздъ");
-
+            Orc O1 = new Orc("Банан", "Умпалумпы", "Жёздъ", 68);
+            O1.log();
 
 
 
