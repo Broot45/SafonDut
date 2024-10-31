@@ -90,8 +90,8 @@ namespace OOP1
             }
         }
 
-        public void giveExp(int Exp) { giveExp(Exp, true); }
-        public void giveExp(int Exp, bool Render) // ====== Получение опыта
+
+        public void giveExp(int Exp, bool Render = true) // ====== Получение опыта (если параметр рендер задан, и отрицателен - анимации получения опыта не будет)
         { 
             this.Exp += Exp;
 
@@ -100,9 +100,20 @@ namespace OOP1
                 this.Exp -= this.ExpMax;
                 this.LVL++;
                 this.ExpMax = (int)(this.ExpMax * this.Expinc); // Расчёт нового предела опыта
-                if (Render) { Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!"); }
                 this.DurMax = (int)(this.DurMax * this.Durinc); // Расчёт нового максимального HP 
                 this.Dur = this.DurMax;
+
+                if (Render) // Анимация получения опыта
+                {
+                    Console.WriteLine($"Существо {this.Name} получило {this.LVL} уровень!"); 
+                }
+
+                if (this.Stasys) // Возврат из стазиса   ==== Просто впадлу куда-либо ещё впихивать
+                {
+                    this.Stasys = false;
+                    Console.WriteLine($"Повышение уровня сняло стазис существа {this.Name}!");
+                }
+
             }
         }
 
@@ -110,12 +121,27 @@ namespace OOP1
         {
             this.Dur -= hurt;
 
-            if (this.Dur > this.DurMax) { this.Dur = this.DurMax; } // Защита от оверхила
-            if (this.Dur <= 0) 
+            if (this.Dur > this.DurMax) // Защита от оверхила + воскрешалка
+            {
+                this.Dur = this.DurMax; 
+
+                if (this.Stasys) // Воскрешалка
+                {
+                    this.Stasys = false;
+                    this.Dur = 10;
+                    Console.WriteLine($"Получив оверхилл, {this.Name} воскрес, имея 10 ХП");
+                }
+            } 
+            if (this.Dur <= 0) // Убивалка
             {
                 this.Dur = 0;
-                this.Stasys = true;
-                Console.WriteLine($"{this.Name} от полученного урона попытался съёбаться {(this.Corr ? "в обьятия хаоса" : "на свет божий")}, но поскольку {(this.Corr ? "хаоса" : "бога")} здесь пока нет - он ушёл в стазис");
+
+                if (!this.Stasys) // Чтобы не кричало на каждый пигок мертвеца
+                { 
+                    Console.WriteLine($"{this.Name} от полученного урона попытался съёбаться {(this.Corr ? "в обьятия хаоса" : "на свет божий")}, но поскольку {(this.Corr ? "хаоса" : "бога")} здесь пока нет - он ушёл в стазис");
+                    this.Stasys = true;
+                }
+                
             }
 
             return this.Dur;
@@ -167,8 +193,14 @@ namespace OOP1
                 Cr[i].log();
             }
 
-            Orc O1 = new Orc("Банан", "Умпалумпы", "Жёздъ", 68);
+            Orc O1 = new Orc("Банан", "Умпалумпы", "Жёздъ", 1, true);
             O1.log();
+
+            O1.brokeEbalo(88);
+
+            O1.log();
+
+
 
 
 
