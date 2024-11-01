@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace OOP1
 {
@@ -161,16 +162,79 @@ namespace OOP1
         public string Breed { get; set; } // Племя орка
         public string Cast { get; set; } // Племенная каста, привязана к работе
 
-        public Orc(string Name, string Breed, string Cast) : this(Name, Breed, Cast, 0, false) { }
-        public Orc(string Name, string Breed, string Cast, int LVL) : this(Name, Breed, Cast, LVL, false) { } // Конструкторы класса, также как и в базовом, совершают цепочку вызовов
-        public Orc(string Name, string Breed, string Cast, int LVL, bool Corr) : base(Name, "Orc", LVL, Corr, (new double[] { 65, 1.15, 2000, 1.05 })) // ===== Конструктор класса второго порядка, помимо своих действий, вызывает конструктор базового класса (наиболее полный)
-                                                                                                                                                       // balance = {65, 1.15, 2000, 1.05 } подразумевает, что орки имеют больше хп, быстрее жиреют, однако им гораздо труднее в начале, и проще в конце (много мяса, и крайне мало крайне сильных)
+        public Orc(string Name, string Breed, string Cast) : this(Name, Breed, Cast, 0) { } // Конструкторы класса, также как и в базовом, совершают цепочку вызовов
+        public Orc(string Name, string Breed, string Cast, int LVL) : base(Name, "Orc", LVL, false, (new double[] { 65, 1.15, 2000, 1.05 })) // ===== Конструктор класса второго порядка, помимо своих действий, вызывает конструктор базового класса (наиболее полный)
+        // balance = {65, 1.15, 2000, 1.05 } подразумевает, что орки имеют больше хп, быстрее жиреют, однако им гораздо труднее в начале, и проще в конце (много мяса, и крайне мало крайне сильных)
+        // Орки не могут получить искажённое состояние
         {
             this.Breed = Breed; // Уникальные для дочернего класса задаваемые параметры
             this.Cast = Cast;
 
 
             Console.WriteLine($"Этот орк имеет титул {Cast}, и проживает в поселении {Breed}");
+        }
+    }
+
+    class Fabric // Класс создатель
+        // Экземпляр этого класса будет просто создавать существ различной рассы с заранее определённым уровнем, именем, искажением
+    {
+        public int Count { get; set; } // Порядковый номер существа
+        public string NamePress { get; set; } // Пресет имени
+        public int LMin { get; set; }
+        public int LMax { get; set; } // Минимальный и максимальный диапазон уровней генерируемых существ
+        public bool Corr { get; set; } // Факт искажённости существ
+        public Random Randy { get; set; }
+
+        public Fabric(int LMin, string NamePress = "[Empty]", bool Corr = false) : this(LMin, LMin, NamePress, Corr) { } // Без разброса уровней
+        public Fabric (int LMin, int LMax, string NamePress = "[Empty]", bool Corr = false) // Конструктор
+        {
+            this.NamePress = NamePress;
+            this.LMin = LMin;
+            this.LMax = LMax;
+            this.Corr = Corr;
+            this.Count = 0;
+            this.Randy = new Random();
+
+            Console.WriteLine($"Шаблон для создания существ с именем {(this.NamePress == "[Empty]" ? "[Расса]" : this.NamePress)} #[Порядковый номер], успешно создан");
+        }
+
+        public Orc OrcGretch(string Breed) // Уровень гретчина не может превышать 5
+        {
+            this.Count++;
+
+            int LVL = this.LMin; // Целевой уровень существа
+
+            if ( this.LMin != this.LMax ) // Ы - оптимизация
+            {
+                LVL = Randy.Next(LMin, LMax + 1);
+            }
+
+            if (LVL > 5) { LVL = 5; }
+            
+
+            return new Orc($"{(this.NamePress == "[Empty]" ? "Гретчин" : this.NamePress)} #{this.Count}", Breed, "Гретчин", LVL);
+        }
+
+        public Orc OrcSnott(string Breed) // Уровень сноттлингов не может превышать 1
+        {
+            this.Count++;
+
+            return new Orc($"{(this.NamePress == "[Empty]" ? "Сноттлинг" : this.NamePress)} #{this.Count}", Breed, "Сноттлинг", 1);
+        }
+
+        public Create Zoldaten() { return this.Zoldaten(new double[] { 50, 1.1, 1000, 1.2 }); }
+        public Create Zoldaten(double[] balance) // (new double[] { MaxHP, HPLVLIncrement, XPtoLVLUp, XPNxtLVLIncrement })
+        {
+            this.Count++;
+
+            int LVL = this.LMin; // Целевой уровень существа
+
+            if (this.LMin != this.LMax) // Ы - оптимизация
+            {
+                LVL = Randy.Next(LMin, LMax + 1);
+            }
+
+            return new Create($"{(this.NamePress == "[Empty]" ? "Криговец" : this.NamePress)} #{this.Count}", "Человек", LVL, this.Corr, balance);
         }
     }
 
@@ -193,15 +257,19 @@ namespace OOP1
                 Cr[i].log();
             }
 
-            Orc O1 = new Orc("Банан", "Умпалумпы", "Жёздъ", 1, true);
-            O1.log();
+            Fabric Spore = new Fabric(4, "Член седьмого карательного отряда", true);
 
-            O1.brokeEbalo(88);
+            Orc g = Spore.OrcGretch("Горк");
+            Orc s = Spore.OrcSnott("Морк");
 
-            O1.log();
+            g.brokeEbalo(100);
+            g.log();
+            s.brokeEbalo(45);
+            s.log();
 
+            Create Crig = Spore.Zoldaten(new double[] { 50, 5.5, 1000, 1.9 });
 
-
+            Crig.log();
 
 
             Console.WriteLine("Нажмите любую клавишу для продолжения...");
